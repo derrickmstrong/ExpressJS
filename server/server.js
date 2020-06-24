@@ -49,11 +49,12 @@ app.use((req, res, next) => {
 });
 
 // Required - Step 4
-app.use(express.static(path.join(__dirname, '../public')));
+let publicPath = path.join(__dirname, '../public');
+app.use(express.static(publicPath));
 
 // Advanced - Post form to a route + Write form results/values to a JSON file (form-data.json) in directory + Display thank you message
 app.post('/contact-form/:id', (req, res) => {
-  // Setup JSON object
+  // Setup JSON format
   const formValues = [
     {
       name: `${req.body.name}`,
@@ -64,7 +65,7 @@ app.post('/contact-form/:id', (req, res) => {
   const formData = JSON.stringify(formValues);
   // Write formData to form-data.json
   fs.writeFileSync('./form-data.json', formData, () =>
-    console.log('file create')
+    console.log('File created!')
   );
   // Display Thank you message
   res.status(200).send(`Thanks ${req.body.name} for your submission!`);
