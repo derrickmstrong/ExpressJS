@@ -5,6 +5,26 @@ const fs = require('fs');
 
 let app = express();
 
+// Use middleware to parse the form data
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
+// Optionally I can use this without body-parser to directly parse data with express
+// app.use(
+//   express.urlencoded({
+//     extended: false,
+//   })
+// );
+
+// Required - Step 5
+// Use custom middleware to log every req.url
+app.use((req, res, next) => {
+  console.log(req.originalUrl);
+  next();
+});
+
 // Required - Step 3
 // Example: Send text to localhost with server
 // app.get('/', (req, res) => {
@@ -12,21 +32,16 @@ let app = express();
 // });
 
 // Example: Send a single file to localhost with server
-// const publicPath = path.join(__dirname, '../public/index.html')
+// const indexPath = path.join(__dirname, '../public/index.html')
 // app.get('/', (req, res) => {
-//   res.sendFile(publicPath);
+//   res.sendFile(indexPath);
 // });
 
 // Example: Send multiple files to localhost  with server
 // const clientPath = path.join(__dirname, '../public');
 // app.use(express.static(clientPath))
 
-// Parse the form data
-app.use(
-  bodyParser.urlencoded({
-    extended: false,
-  })
-);
+
 
 // Example: Post form results to the screen after submission
 // app.post('/contact-form', (req, res) => {
@@ -42,12 +57,6 @@ app.use(
 //   res.status(200).send(`Hi ${name}, is your email ${email}?`)
 // })
 
-// Required - Step 5
-app.use((req, res, next) => {
-  console.log(req.originalUrl);
-  next();
-});
-
 // Required - Step 4
 let publicPath = path.join(__dirname, '../public');
 app.use(express.static(publicPath));
@@ -55,18 +64,27 @@ app.use(express.static(publicPath));
 // Advanced - Post form to a route + Write form results/values to a JSON file (form-data.json) in directory + Display thank you message
 app.post('/contact-form/:id', (req, res) => {
   // Setup JSON format
-  const formValues = [
-    {
+  const formValues = {
       name: `${req.body.name}`,
       email: `${req.body.email}`,
-    },
-  ];
+    }
+
   // Stringify JSON
   const formData = JSON.stringify(formValues);
-  // Write formData to form-data.json
-  fs.writeFileSync('./form-data.json', formData, () =>
+
+  // Option 1: Write formData to form-data.json async 
+  fs.writeFile('./form-data.json', formData, (err) => {
+if (err) throw err;
     console.log('File created!')
+  }
   );
+
+  // Option 2: Append to formData to form-data.json async
+  // fs.appendFile('./form-data.json', formData, (err) => {
+  //   if (err) throw err;
+  //   console.log('Appended created!');
+  // });
+
   // Display Thank you message
   res.status(200).send(`Thanks ${req.body.name} for your submission!`);
 });
