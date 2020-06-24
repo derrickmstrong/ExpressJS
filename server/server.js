@@ -41,8 +41,6 @@ app.use((req, res, next) => {
 // const clientPath = path.join(__dirname, '../public');
 // app.use(express.static(clientPath))
 
-
-
 // Example: Post form results to the screen after submission
 // app.post('/contact-form', (req, res) => {
 //   console.log(req.body.name);
@@ -65,19 +63,18 @@ app.use(express.static(publicPath));
 app.post('/contact-form/:id', (req, res) => {
   // Setup JSON format
   const formValues = {
-      name: `${req.body.name}`,
-      email: `${req.body.email}`,
-    }
+    name: `${req.body.name}`,
+    email: `${req.body.email}`,
+  };
 
   // Stringify JSON
   const formData = JSON.stringify(formValues);
 
-  // Option 1: Write formData to form-data.json async 
+  // Option 1: Write formData to form-data.json async
   fs.writeFile('./form-data.json', formData, (err) => {
-if (err) throw err;
-    console.log('File created!')
-  }
-  );
+    if (err) throw err;
+    console.log('File created!');
+  });
 
   // Option 2: Append to formData to form-data.json async
   // fs.appendFile('./form-data.json', formData, (err) => {
